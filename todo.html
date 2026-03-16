@@ -20,6 +20,20 @@
 
     h2 { text-align:center; font-weight:600; color:#6c5ce7; letter-spacing:1px; }
 
+   .search-box {
+        width: 100%;
+        padding: 10px 15px;
+        border-radius: 50px;
+        border: 1px solid #ccc;
+        outline: none;
+        transition: 0.3s;
+        margin-bottom: 5px;
+    }
+    .search-box:focus {
+        border-color: #6c5ce7;
+        box-shadow: 0 0 5px rgba(108,92,231,0.5);
+    }
+
     .input-group { display:flex; gap:10px; }
     input[type="text"] {
         flex:1; padding:10px 15px; border-radius:50px; border:1px solid #ccc;
@@ -61,7 +75,9 @@
 <div class="container">
     <h2>My Tasks</h2>
     <div class="input-group">
-        <input type="text" id="taskInput" placeholder="Add a new task...">
+
+       <input type="text" id="searchInput" class="search-box" placeholder="Search tasks..." onkeyup="searchTasks()">       
+       <input type="text" id="taskInput" placeholder="Add a new task...">
         <button onclick="addTask()">Add</button>
     </div>
 
@@ -81,6 +97,20 @@
 </div>
 
 <script>
+   function searchTasks() {
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+        const tasks = document.querySelectorAll('#taskList li');
+        
+        tasks.forEach(task => {
+            const taskText = task.childNodes[0].nodeValue.trim();
+            if (taskText.toLowerCase().includes(searchText)) {
+                task.style.display = 'flex';
+            } else {
+                task.style.display = 'none';
+            }
+        });
+    }
+
     function addTask() {
         const taskInput = document.getElementById('taskInput');
         const taskText = taskInput.value.trim();
@@ -94,8 +124,8 @@
         const delBtn = document.createElement('button');
         delBtn.textContent = 'Delete';
         delBtn.className = 'delete-btn';
-        delBtn.addEventListener('click', (e) => { e.stopPropagation(); li.remove(); });
-
+        delBtn.addEventListener('click', (e) => { e.stopPropagation(); li.remove(); 
+                                                searchTasks();});
         li.appendChild(delBtn);
         document.getElementById('taskList').appendChild(li);
         taskInput.value = '';
@@ -111,10 +141,12 @@
 
     function clearCompleted() {
         document.querySelectorAll('#taskList li.completed').forEach(li => li.remove());
+       searchTasks();
     }
 
     function clearAll() {
         document.querySelectorAll('#taskList li').forEach(li => li.remove());
+       searchTasks();
     }
 
     function filterTasks(type) {
@@ -124,6 +156,10 @@
             if(type === 'active' && task.classList.contains('completed')) task.style.display='none';
             if(type === 'completed' && !task.classList.contains('completed')) task.style.display='none';
         });
+          const searchInput = document.getElementById('searchInput');
+        if(searchInput.value) {
+            searchTasks();
+        }
     }
 </script>
 </body>
